@@ -252,7 +252,7 @@ sub main{
 	# If this is just an ftp-dry-run then print which files would have been uploaded and exit.
 	if ($ftpdryrun){
 		if (@filesToUpdate){
-			print("Files will be uploaded to '/$rootdir' when used without --ftp-dry-run\n");
+			print("Files will be uploaded to '$rootdir' when used without --ftp-dry-run\n");
 		}
 		else{
 			print("There are no files that need updating.\n");
@@ -267,13 +267,21 @@ sub main{
 	# Go into auto flush mode
 	$| = 1;
 
+	my $lastInfoLineLength = 0;
 	# Upload all files we need to update
 	for (@filesToUpdate){
 		$i++;
-		print ("\rUploading file $i of $num. '$_'");
+		my $infoLine = "Uploading file $i of $num. '$_'";
+		my $thisInfoLineLength = length($infoLine);
+		my $numSpaces = ($lastInfoLineLength - $thisInfoLineLength);
+		my $spaces;
+		if ($numSpaces > 0) {$spaces = ' ' x $numSpaces}
+		else {$spaces = ""}
+		print ("\r$infoLine$spaces");
+		$lastInfoLineLength = $thisInfoLineLength;
 		my $basename = basename($_);
 		my $dirname  = dirname($_);
-		my $fullpath = "/$rootdir/$dirname";
+		my $fullpath = "$rootdir/$dirname";
 		# If we can't change to this dir, we probably need to create it
 		if ( ! $ftp->cwd($fullpath) ){
 			# Try to create it, if we fail, notify the user.
@@ -361,11 +369,9 @@ See exclude files section below for more details.
 
 This specifies the root directory on the server that will be used for upload.
 Any files in your root working direct when you run webdeploy will be uploaded to this folder.
-This is always specified relative to '/' on the server.
-If you want your files to appear in '/' on the server then you do not need to set this option.
-If you set this option, make sure you specify a directory without a leading or trailing slash.
+If you set this option, make sure you specify a directory without a trailing slash.
 
-For example, if you want your files uploaded to '/var/www/' on the server, then use the option '--server-root var/www'
+For example, if you want your files uploaded to '/var/www/' on the server, then use the option '--server-root /var/www'
 
 =item B<--dry-run>
 
