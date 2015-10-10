@@ -13,6 +13,7 @@ webdeploy.1: webdeploy
 	pod2man --name=WebDeploy -c"WebDeploy - Deploy files via FTP" --section=1 --release="Version $(VERSION)" $< > $@
 
 install: all
+	install -d $(DESTDIR)$(bindir) $(DESTDIR)$(man1dir)
 	install webdeploy $(DESTDIR)$(bindir)
 	install -m 0644 webdeploy.1 $(DESTDIR)$(man1dir)
 
